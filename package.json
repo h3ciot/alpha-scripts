@@ -5,5 +5,10 @@
   "main": "index.js",
   "author": "yoranfu",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "react-dev-utils": "^5.0.1",
+    "webpack": "3.8.1",
+    "webpack-dev-server": "2.9.4"
+  }
 }
