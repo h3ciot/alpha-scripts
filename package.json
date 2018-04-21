@@ -1,0 +1,9 @@
+{
+  "name": "alpha-scripts",
+  "version": "1.0.0",
+  "description": "Configuration and scripts using webpack, mainly refers to react-scripts.",
+  "main": "index.js",
+  "author": "yoranfu",
+  "license": "MIT",
+  "private": false
+}
