@@ -90,7 +90,7 @@ module.exports = {
               useEslintrc: false,
             },
             loader: require.resolve('eslint-loader'),
-          }
+          },
         ],
         include: paths.appSrc,
       },
@@ -107,7 +107,7 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
-          // Process JS wiht Babel.
+          // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
@@ -126,7 +126,7 @@ module.exports = {
           {
             test: /\.css$/,
             use: [
-              require.resolve('css-loader'),
+              require.resolve('style-loader'),
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -150,7 +150,7 @@ module.exports = {
                       flexbox: 'no-2009',
                     }),
                   ],
-                }
+                },
               },
             ],
           },
