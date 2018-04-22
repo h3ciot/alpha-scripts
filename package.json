@@ -5,7 +5,9 @@
   "main": "index.js",
   "author": "yoranfu",
   "license": "MIT",
-  "private": false,
+  "bin": {
+    "alpha-scripts": "./bin/alpha-scripts.js"
+  },
   "dependencies": {
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
