@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "yoranfu",
   "license": "MIT",
+  "engines": {
+    "node": ">=6"
+  },
   "bin": {
     "alpha-scripts": "./bin/alpha-scripts.js"
   },
