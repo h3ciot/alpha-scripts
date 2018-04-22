@@ -27,7 +27,7 @@ const env = getClientEnvironment(publicUrl);
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 module.exports = {
-  devtools: 'cheap-module-source-map',
+  devtool: 'cheap-module-source-map',
   entry: [
     require.resolve('./polyfills'),
     require.resolve('react-dev-utils/webpackHotDevClient'),
@@ -83,6 +83,11 @@ module.exports = {
             options: {
               formatter: eslintFormatter,
               eslintPath: require.resolve('eslint'),
+              baseConfig: {
+                extends: [require.resolve('eslint-config-react-app')],
+              },
+              ignore: false,
+              useEslintrc: false,
             },
             loader: require.resolve('eslint-loader'),
           }
@@ -121,7 +126,7 @@ module.exports = {
             use: [
               require.resolve('css-loader'),
               {
-                loader: reuqire.resolve('css-loader'),
+                loader: require.resolve('css-loader'),
                 options: {
                   importLoaders: 1,
                 },
