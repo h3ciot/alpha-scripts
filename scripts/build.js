@@ -1,95 +1,150 @@
 'use strict';
 
-const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
-const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
-const ignoredFiles = require('react-dev-utils/ignoredFiles');
-const config = require('./webpack.config.dev');
-const paths = require('./paths');
+// Do this as the first thing so that any code reading it knows the right env.
+process.env.BABEL_ENV = 'production';
+process.env.NODE_ENV = 'production';
 
-const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
-const host = process.env.HOST || '0.0.0.0';
+// Makes the script crash on unhandled rejections instead of silently
+// ignoring them. In the future, promise rejections that are not handled will
+// terminate the Node.js process with a non-zero exit code.
+process.on('unhandledRejection', err => {
+  throw err;
+});
 
-module.exports = function(proxy, allowedHost) {
-  return {
-    // WebpackDevServer 2.4.3 introduced a security fix that prevents remote
-    // websites from potentially accessing local content through DNS rebinding:
-    // https://github.com/webpack/webpack-dev-server/issues/887
-    // https://medium.com/webpack/webpack-dev-server-middleware-security-issues-1489d950874a
-    // However, it made several existing use cases such as development in cloud
-    // environment or subdomains in development significantly more complicated:
-    // https://github.com/facebookincubator/create-react-app/issues/2271
-    // https://github.com/facebookincubator/create-react-app/issues/2233
-    // While we're investigating better solutions, for now we will take a
-    // compromise. Since our WDS configuration only serves files in the `public`
-    // folder we won't consider accessing them a vulnerability. However, if you
-    // use the `proxy` feature, it gets more dangerous because it can expose
-    // remote code execution vulnerabilities in backends like Django and Rails.
-    // So we will disable the host check normally, but enable it if you have
-    // specified the `proxy` setting. Finally, we let you override it if you
-    // really know what you're doing with a special environment variable.
-    disableHostCheck:
-      !proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
-    // Enable gzip compression of generated files.
-    compress: true,
-    // Silence WebpackDevServer's own logs since they're generally not useful.
-    // It will still show compile warnings and errors with this setting.
-    clientLogLevel: 'none',
-    // By default WebpackDevServer serves physical files from current directory
-    // in addition to all the virtual build products that it serves from memory.
-    // This is confusing because those files won’t automatically be available in
-    // production build folder unless we copy them. However, copying the whole
-    // project directory is dangerous because we may expose sensitive files.
-    // Instead, we establish a convention that only files in `public` directory
-    // get served. Our build script will copy `public` into the `build` folder.
-    // In `index.html`, you can get URL of `public` folder with %PUBLIC_URL%:
-    // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    // In JavaScript code, you can access it with `process.env.PUBLIC_URL`.
-    // Note that we only recommend to use `public` folder as an escape hatch
-    // for files like `favicon.ico`, `manifest.json`, and libraries that are
-    // for some reason broken when imported through Webpack. If you just want to
-    // use an image, put it in `src` and `import` it from JavaScript instead.
-    contentBase: paths.appPublic,
-    // By default files from `contentBase` will not trigger a page reload.
-    watchContentBase: true,
-    // Enable hot reloading server. It will provide /sockjs-node/ endpoint
-    // for the WebpackDevServer client so it can learn when the files were
-    // updated. The WebpackDevServer client is included as an entry point
-    // in the Webpack development configuration. Note that only changes
-    // to CSS are currently hot reloaded. JS changes will refresh the browser.
-    hot: true,
-    // It is important to tell WebpackDevServer to use the same "root" path
-    // as we specified in the config. In development, we always serve from /.
-    publicPath: config.output.publicPath,
-    // WebpackDevServer is noisy by default so we emit custom message instead
-    // by listening to the compiler events with `compiler.plugin` calls above.
-    quiet: true,
-    // Reportedly, this avoids CPU overload on some systems.
-    // https://github.com/facebookincubator/create-react-app/issues/293
-    // src/node_modules is not ignored to support absolute imports
-    // https://github.com/facebookincubator/create-react-app/issues/1065
-    watchOptions: {
-      ignored: ignoredFiles(paths.appSrc),
+// Ensure environment variables are read.
+require('../config/env');
+
+const path = require('path');
+const chalk = require('chalk');
+const fs = require('fs-extra');
+const webpack = require('webpack');
+const config = require('../config/webpack.config.prod');
+const paths = require('../config/paths');
+const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
+const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
+const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
+const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
+const printBuildError = require('react-dev-utils/printBuildError');
+
+const measureFileSizesBeforeBuild =
+  FileSizeReporter.measureFileSizesBeforeBuild;
+const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
+const useYarn = fs.existsSync(paths.yarnLockFile);
+
+// These sizes are pretty large. We'll warn for bundles exceeding them.
+const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
+const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
+
+// Warn and crash if required files are missing
+if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
+  process.exit(1);
+}
+
+// First, read the current file sizes in build directory.
+// This lets us display how much they changed later.
+measureFileSizesBeforeBuild(paths.appBuild)
+  .then(previousFileSizes => {
+    // Remove all content but keep the directory so that
+    // if you're in it, you don't end up in Trash
+    fs.emptyDirSync(paths.appBuild);
+    // Merge with the public folder
+    copyPublicFolder();
+    // Start the webpack build
+    return build(previousFileSizes);
+  })
+  .then(
+    ({ stats, previousFileSizes, warnings }) => {
+      if (warnings.length) {
+        console.log(chalk.yellow('Compiled with warnings.\n'));
+        console.log(warnings.join('\n\n'));
+        console.log(
+          '\nSearch for the ' +
+            chalk.underline(chalk.yellow('keywords')) +
+            ' to learn more about each warning.'
+        );
+        console.log(
+          'To ignore, add ' +
+            chalk.cyan('// eslint-disable-next-line') +
+            ' to the line before.\n'
+        );
+      } else {
+        console.log(chalk.green('Compiled successfully.\n'));
+      }
+
+      console.log('File sizes after gzip:\n');
+      printFileSizesAfterBuild(
+        stats,
+        previousFileSizes,
+        paths.appBuild,
+        WARN_AFTER_BUNDLE_GZIP_SIZE,
+        WARN_AFTER_CHUNK_GZIP_SIZE
+      );
+      console.log();
+
+      const appPackage = require(paths.appPackageJson);
+      const publicUrl = paths.publicUrl;
+      const publicPath = config.output.publicPath;
+      const buildFolder = path.relative(process.cwd(), paths.appBuild);
+      printHostingInstructions(
+        appPackage,
+        publicUrl,
+        publicPath,
+        buildFolder,
+        useYarn
+      );
     },
-    // Enable HTTPS if the HTTPS environment variable is set to 'true'
-    https: protocol === 'https',
-    host: host,
-    overlay: false,
-    historyApiFallback: {
-      // Paths with dots should still use the history fallback.
-      // See https://github.com/facebookincubator/create-react-app/issues/387.
-      disableDotRule: true,
-    },
-    public: allowedHost,
-    proxy,
-    before(app) {
-      // This lets us open files from the runtime error overlay.
-      app.use(errorOverlayMiddleware());
-      // This service worker file is effectively a 'no-op' that will reset any
-      // previous service worker registered for the same host:port combination.
-      // We do this in development to avoid hitting the production cache if
-      // it used the same host and port.
-      // https://github.com/facebookincubator/create-react-app/issues/2272#issuecomment-302832432
-      app.use(noopServiceWorkerMiddleware());
-    },
-  };
-};
+    err => {
+      console.log(chalk.red('Failed to compile.\n'));
+      printBuildError(err);
+      process.exit(1);
+    }
+  );
+
+// Create the production build and print the deployment instructions.
+function build(previousFileSizes) {
+  console.log('Creating an optimized production build...');
+
+  let compiler = webpack(config);
+  return new Promise((resolve, reject) => {
+    compiler.run((err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      const messages = formatWebpackMessages(stats.toJson({}, true));
+      if (messages.errors.length) {
+        // Only keep the first error. Others are often indicative
+        // of the same problem, but confuse the reader with noise.
+        if (messages.errors.length > 1) {
+          messages.errors.length = 1;
+        }
+        return reject(new Error(messages.errors.join('\n\n')));
+      }
+      if (
+        process.env.CI &&
+        (typeof process.env.CI !== 'string' ||
+          process.env.CI.toLowerCase() !== 'false') &&
+        messages.warnings.length
+      ) {
+        console.log(
+          chalk.yellow(
+            '\nTreating warnings as errors because process.env.CI = true.\n' +
+              'Most CI servers set it automatically.\n'
+          )
+        );
+        return reject(new Error(messages.warnings.join('\n\n')));
+      }
+      return resolve({
+        stats,
+        previousFileSizes,
+        warnings: messages.warnings,
+      });
+    });
+  });
+}
+
+function copyPublicFolder() {
+  fs.copySync(paths.appPublic, paths.appBuild, {
+    dereference: true,
+    filter: file => file !== paths.appHtml,
+  });
+}
