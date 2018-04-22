@@ -4,6 +4,10 @@
   "description": "Configuration and scripts using webpack, mainly refers to react-scripts.",
   "main": "index.js",
   "author": "yoranfu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoranfu/alpha-scripts"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=6"
