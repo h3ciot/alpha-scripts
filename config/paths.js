@@ -36,6 +36,9 @@ function getServedPath(appPackageJson) {
   return ensureSlash(servedUrl, true);
 }
 
+const getMockOptions = appPackageJson =>
+  require(appPackageJson).mockOptions || {};
+
 const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 
 module.exports = {
@@ -52,6 +55,7 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
+  mockOptions: getMockOptions(resolveApp('package.json')),
   ownPath: resolveOwn('.'), // we're in ./node_modules/alpha-scripts/
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
 };
