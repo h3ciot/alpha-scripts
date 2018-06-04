@@ -1,6 +1,7 @@
 'use strict';
 
 const autoprefixer = require('autoprefixer');
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -33,6 +34,30 @@ const env = getClientEnvironment(publicUrl);
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
   throw new Error('Production builds must have NODE_ENV=production.');
 }
+
+// If need to use external eslintrc or babelrc, set eslintrc field or babelrc field
+// to true in .alpharc.js configure file
+const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
+const eslintOptions = alpharc.eslintrc ? {
+  formatter: eslintFormatter,
+  eslintPath: require.resolve('eslint'),
+} : {
+  formatter: eslintFormatter,
+  eslintPath: require.resolve('eslint'),
+  baseConfig: {
+    extends: [require.resolve('eslint-config-react-app')],
+  },
+  ignore: false,
+  useEslintrc: false,
+};
+
+const babelOptions = alpharc.babelrc ? {
+  compact: true,
+} : {
+  babelrc: false,
+  presets: [require.resolve('babel-preset-react-app')],
+  compact: true,
+};
 
 // Note: defined here because it will be used more than once.
 const cssFilename = 'static/css/[name].[contenthash:8].css';
@@ -116,15 +141,7 @@ module.exports = {
         enforce: 'pre',
         use: [
           {
-            options: {
-              formatter: eslintFormatter,
-              eslintPath: require.resolve('eslint'),
-              baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')],
-              },
-              ignore: false,
-              useEslintrc: false,
-            },
+            options: eslintOptions,
             loader: require.resolve('eslint-loader'),
           },
         ],
@@ -150,11 +167,7 @@ module.exports = {
             test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
-            options: {
-              babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
-              compact: true,
-            },
+            options: babelOptions,
           },
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.

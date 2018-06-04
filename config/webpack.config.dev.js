@@ -1,6 +1,7 @@
 'use strict';
 
 const autoprefixer = require('autoprefixer');
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 // webpack plugins
@@ -23,6 +24,30 @@ const publicPath = '/';
 const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
+
+// If need to use external eslintrc or babelrc, set eslintrc field or babelrc field
+// to true in .alpharc.js configure file
+const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
+const eslintOptions = alpharc.eslintrc ? {
+  formatter: eslintFormatter,
+  eslintPath: require.resolve('eslint'),
+} : {
+  formatter: eslintFormatter,
+  eslintPath: require.resolve('eslint'),
+  baseConfig: {
+    extends: [require.resolve('eslint-config-react-app')],
+  },
+  ignore: false,
+  useEslintrc: false,
+};
+
+const babelOptions = alpharc.babelrc ? {
+  cacheDirectory: true,
+} : {
+  babelrc: false,
+  presets: [require.resolve('babel-preset-react-app')],
+  cacheDirectory: true,
+};
 
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
@@ -80,15 +105,7 @@ module.exports = {
         enforce: 'pre',
         use: [
           {
-            options: {
-              formatter: eslintFormatter,
-              eslintPath: require.resolve('eslint'),
-              baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')],
-              },
-              ignore: false,
-              useEslintrc: false,
-            },
+            options: eslintOptions,
             loader: require.resolve('eslint-loader'),
           },
         ],
@@ -112,11 +129,7 @@ module.exports = {
             test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
-            options: {
-              babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
-              cacheDirectory: true,
-            },
+            options: babelOptions,
           },
           // 'postcss' loader applies autoprefixer to css
           // "css" loader resolves paths in CSS and adds assets as dependencies.

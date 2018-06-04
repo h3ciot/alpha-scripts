@@ -46,6 +46,7 @@ module.exports = {
   appPath: resolveApp('.'),
   appBuild: resolveApp('build'),
   appPublic: resolveApp('public'),
+  alpharc: resolveApp('.alpharc.js'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
@@ -55,7 +56,6 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
-  mockOptions: getMockOptions(resolveApp('package.json')),
   ownPath: resolveOwn('.'), // we're in ./node_modules/alpha-scripts/
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
 };
