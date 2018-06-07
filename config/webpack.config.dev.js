@@ -104,7 +104,8 @@ module.exports = {
   },
   resolve: {
     modules: ['node_modules', paths.appNodeModules].concat(
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
+      [].concat(alpharc.modules).filter(Boolean)
     ),
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: Object.assign(

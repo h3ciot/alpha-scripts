@@ -138,7 +138,8 @@ module.exports = {
     // if there are any conflicts. This matches Node resolution mechanism.
     modules: ['node_modules', paths.appNodeModules].concat(
       // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
+      [].concat(alpharc.modules).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
