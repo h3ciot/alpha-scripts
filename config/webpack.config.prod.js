@@ -87,6 +87,7 @@ const cssLoaders = [
     options: {
       // Necessary for external CSS imports to work
       ident: 'postcss',
+      sourceMap: shouldUseSourceMap,
       plugins: () => [
         require('postcss-flexbugs-fixes'),
         autoprefixer({
