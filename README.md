@@ -58,6 +58,13 @@ set resolve aliases, see [webpack resolve.alias](https://webpack.js.org/configur
 #### `mockOptions`
 specify the options for mock data, [more](https://github.com/yoranfu/alpha-utils#usage)
 
+#### `openPathname`
+specify the default open pathname in development
+
+```js
+openPathname: '/homepage'
+```
+
 #### `theme`
 override less variables via [less-loader modifyVars](https://github.com/webpack-contrib/less-loader#less-options)
 
