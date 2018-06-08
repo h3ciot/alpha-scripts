@@ -29,7 +29,7 @@ You can also config the "scripts" property of the package.json file.
 
 ### Options
 
-You can pass options using a configuration file .alpharc.js in the root directory and export an object containing your configuration.
+You can pass options using a configuration file `.alpharc.js` in the root directory and export an object containing your configuration.
 
 #### `eslintrc` (default: false)
 
