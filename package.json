@@ -16,7 +16,7 @@
     "alpha-scripts": "./bin/alpha-scripts.js"
   },
   "dependencies": {
-    "alpha-utils": "^1.0.0",
+    "alpha-utils": "^1.1.0",
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
     "babel-eslint": "7.2.3",
