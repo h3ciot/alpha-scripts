@@ -23,7 +23,8 @@ if (!process.env.CI && argv.indexOf('--coverage') < 0) {
   argv.push('--watch');
 }
 
-
+// @remove-on-eject-begin
+// This is not necessary after eject because we embed config into package.json.
 const createJestConfig = require('./utils/createJestConfig');
 const path = require('path');
 const paths = require('../config/paths');
@@ -38,8 +39,6 @@ argv.push(
   )
 );
 
-// @remove-on-eject-begin
-// This is not necessary after eject because we embed config into package.json.
 // This is a very dirty workaround for https://github.com/facebook/jest/issues/5913.
 // We're trying to resolve the environment ourselves because Jest does it incorrectly.
 // TODO: remove this (and the `resolve` dependency) as soon as it's fixed in Jest.
