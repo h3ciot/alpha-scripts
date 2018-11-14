@@ -74,6 +74,12 @@ theme: {
 },
 ```
 
+#### `includePaths`
+paths for babel-loader to resolve
+
+#### `watchIgnored`
+specify watch ignore files and/or directories [watchOptions.ignored](https://webpack.js.org/configuration/watch/#watchoptions-ignored)
+
 Note:
 
 If you want to override @icon-url, the value must be contained in quotes like "@icon-url": "'your-icon-font-path'". [A fix sample](https://github.com/vision8tech/dvajs-user-dashboard/pull/2).
