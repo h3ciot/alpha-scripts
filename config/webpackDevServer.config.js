@@ -11,7 +11,8 @@ const mockMiddleware = require('alpha-utils/mockMiddleware');
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
-const mockOptions = (fs.existsSync(paths.alpharc) && require(paths.alpharc).mockOptions) || {};
+const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
+const mockOptions = alpharc.mockOptions || {};
 
 module.exports = function(proxy, allowedHost) {
   return {
@@ -72,7 +73,7 @@ module.exports = function(proxy, allowedHost) {
     // src/node_modules is not ignored to support absolute imports
     // https://github.com/facebookincubator/create-react-app/issues/1065
     watchOptions: {
-      ignored: ignoredFiles(paths.appSrc),
+      ignored: alpharc.watchIgnored || ignoredFiles(paths.appSrc),
     },
     // Enable HTTPS if the HTTPS environment variable is set to 'true'
     https: protocol === 'https',

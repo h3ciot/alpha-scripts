@@ -129,6 +129,7 @@ module.exports = {
       // Prevents users from importing files from outside of src/ (or node_modules/).
       new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
     ],
+    symlinks: false,
   },
   module: {
     strictExportPresence: true,
@@ -160,7 +161,7 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
-            include: paths.appSrc,
+            include: [paths.appSrc].concat(alpharc.includePaths || []),
             loader: require.resolve('babel-loader'),
             options: babelOptions,
           },
