@@ -136,10 +136,11 @@ module.exports = {
     // This allows you to set a fallback for where Webpack should look for modules.
     // We placed these paths second because we want `node_modules` to "win"
     // if there are any conflicts. This matches Node resolution mechanism.
-    modules: ['node_modules', paths.appNodeModules].concat(
+    modules: [].concat(alpharc.modules).filter(Boolean).concat(
+      // resolve precedence: user defined modules, app node_modules, node_modules
+      [paths.appNodeModules, 'node_modules'],
       // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
-      [].concat(alpharc.modules).filter(Boolean)
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support

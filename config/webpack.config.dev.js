@@ -103,9 +103,11 @@ module.exports = {
       path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   resolve: {
-    modules: ['node_modules', paths.appNodeModules].concat(
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
-      [].concat(alpharc.modules).filter(Boolean)
+    modules: [].concat(alpharc.modules).filter(Boolean).concat(
+      // resolve precedence: user defined modules, app node_modules, node_modules
+      [paths.appNodeModules, 'node_modules'],
+      // It is guaranteed to exist because we tweak it in `env.js`
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: Object.assign(
