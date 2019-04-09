@@ -4,6 +4,7 @@ const autoprefixer = require('autoprefixer');
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const ProgressBar = require('progress');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -104,7 +105,12 @@ const cssLoaders = [
   },
 ];
 
-
+const bar = new ProgressBar(' [:bar] :percent ', {
+  complete: '#',
+  incomplete: '-',
+  width: 80,
+  total: 100
+});
 
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
@@ -383,6 +389,10 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // compiling progress bar
+    new webpack.ProgressPlugin(function(percentage) {
+      bar.update(percentage);
+    }),
   ].concat(alpharc.plugins || []),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
