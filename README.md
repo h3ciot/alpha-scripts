@@ -55,6 +55,10 @@ set resolve aliases, see [webpack resolve.alias](https://webpack.js.org/configur
 
 [proxying API requests in development](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#proxying-api-requests-in-development)
 
+#### `plugins`
+
+allow additional webpack plugins. See [plugins page](https://webpack.js.org/configuration/plugins) for detail.
+
 #### `mockOptions`
 specify the options for mock data, [more](https://github.com/yoranfu/alpha-utils#usage)
 
