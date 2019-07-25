@@ -31,6 +31,11 @@ You can also config the "scripts" property of the package.json file.
 
 You can pass options using a configuration file `.alpharc.js` in the root directory and export an object containing your configuration.
 
+#### `analyzer (default: false)
+
+This option will enable analyzer, only in production mode, will open analyzer result in http://localhost:1234 `.eslintrc.*` files.
+
+
 #### `eslintrc` (default: false)
 
 This option will enable eslint using configuration defined in `.eslintrc.*` files.
