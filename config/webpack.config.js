@@ -31,7 +31,7 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 const postcssNormalize = require('postcss-normalize');
 const HappyPack = require('happypack');
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length * 2 });
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length - 1 });
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 // alpharc配置
 const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
@@ -465,7 +465,7 @@ module.exports = function (webpackEnv) {
                                 },
                                 alpharc.eslintrc ? {
                                     useEslintrc: true,
-                                    configFile: path.resolve(path.resolve(paths.appPath, '../../.eslintrc.json')),
+                                    configFile: alpharc.eslintConfigPath,
                                 } : {
                                     baseConfig: {
                                         extends: [require.resolve('eslint-config-react-app')],
