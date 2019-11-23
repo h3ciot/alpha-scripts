@@ -183,6 +183,7 @@ module.exports = function (webpackEnv) {
                         .replace(/\\/g, '/')
                 : isEnvDevelopment &&
                 (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+            globalObject: isEnvDevelopment ? "this" : undefined,
         },
         optimization: {
             minimize: isEnvProduction,
@@ -334,6 +335,11 @@ module.exports = function (webpackEnv) {
                     //     },
                     // ],
                     include: [paths.appSrc, alpharc.includePaths].filter(Boolean),
+                },
+                {
+                  test: /\.worker\.js$/,
+                  loader: require.resolve('worker-loader'),
+                  exclude: /node_modules/
                 },
                 {
                     // "oneOf" will traverse all following loaders until one will
