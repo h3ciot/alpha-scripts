@@ -130,7 +130,7 @@ module.exports = function (webpackEnv) {
         bail: isEnvProduction,
         devtool: isEnvProduction
             ? shouldUseSourceMap
-                ? 'cheap-module-source-map'
+                ? 'source-map'
                 : false
             : isEnvDevelopment && 'source-map',
         // These are the "entry points" to our application.
