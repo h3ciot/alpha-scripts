@@ -32,7 +32,6 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 const postcssNormalize = require('postcss-normalize');
 const HappyPack = require('happypack');
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length - 1 });
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 // alpharc配置
 const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
 
@@ -705,9 +704,8 @@ module.exports = function (webpackEnv) {
                 ),
                 //   add progress
                 new ProgressBarPlugin(),
-                isEnvProduction && new InjectGitInfoPlugin({ workPath: path.resolve(paths.appPath, '../../')}),
+                isEnvProduction && new InjectGitInfoPlugin({ workPath: paths.gitPath }),
                 // add cache
-                isEnvProduction && new HardSourceWebpackPlugin(),
             ].filter(Boolean) }, { plugins: alpharc.plugins }).plugins,
         // Some libraries import Node modules but don't use them in the browser.
         // Tell Webpack to provide empty mocks for them so importing them works.
