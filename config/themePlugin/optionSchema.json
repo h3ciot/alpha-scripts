@@ -1,0 +1,9 @@
+{
+    "type": "object",
+    "properties": {
+        "lessVal": {
+            "description": "this is theme base variable object",
+            "type": "object"
+        }
+    }
+}
