@@ -49,6 +49,7 @@ function themeLoader(source) {
         }
       });
     }
+    root.nodes.forEach(deleteEmpty);
     if (root.nodes.length || atRuleName.size) {
       storage.add(root.toString());
       // storage.add(root.toResult());
@@ -56,6 +57,14 @@ function themeLoader(source) {
     }
     callback(null, sourceTemp);
   });
+}
+function deleteEmpty(item) {
+  console.log('deleteEmpty:', item, item.type);
+  if(item.nodes.lenght) {
+    item.nodes.forEach(deleteEmpty)
+  } else {
+    item.remove();
+  }
 }
 function dealAtRule(rule, atRuleName) {
   const { params, name } = rule;
