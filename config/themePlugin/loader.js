@@ -5,6 +5,7 @@ let path = require('path');
 const schema = require('./optionSchema.json');
 const syntax = require('postcss-less');
 const storage = require('./contentTemp');
+const stringify = require('./stringifier');
 let fs = require('fs');
 let globalVarsSet = new Set();
 function themeLoader(source) {
@@ -12,7 +13,6 @@ function themeLoader(source) {
   validate(option, schema);
   this.options = option;
   const { globalVars } = option;
-  console.log(globalVars);
   Object.keys(globalVars).forEach(key => {
     globalVarsSet.add(key);
   });
@@ -29,19 +29,15 @@ function themeLoader(source) {
         comment.parent.removeChild(comment);
       });
       root.walkRules(rule => {
-        console.log('rule:', rule);
         if (rule.nodes.length === 0) {
           let parent = rule.parent;
           rule.parent.removeChild(rule);
           // 删除全部空树将会导致缺少一个分号
           while(parent) {
             if(parent.nodes.length === 0) {
-              if (parent.parent) {
-                parent.parent.removeChild(parent);
-              } else {
-                parent.remove();
-              }
+              const temp = parent;
               parent = parent.parent;
+              temp.remove();
             } else {
               break;
             }
@@ -51,7 +47,7 @@ function themeLoader(source) {
     }
     root.nodes.forEach(deleteEmpty);
     if (root.nodes.length || atRuleName.size) {
-      storage.add(root.toString());
+      storage.add(root.toString(stringify));
       // storage.add(root.toResult());
       // sourceTemp = `/**THEMECSSBEGIN**\r\n${root.toString()}\r\n**THEMECSSEND**/\r\n${source}`;
     }
@@ -59,22 +55,28 @@ function themeLoader(source) {
   });
 }
 function deleteEmpty(item) {
-  console.log('deleteEmpty:', item, item.type);
-  if(item.nodes.lenght) {
+  if(item.nodes && item.nodes.lenght) {
     item.nodes.forEach(deleteEmpty)
   } else {
-    item.remove();
+    if(item.nodes && item.nodes.lenght === 0) {
+      item.remove();
+    }
   }
 }
 function dealAtRule(rule, atRuleName) {
   const { params, name } = rule;
   let remove = true;
-  console.log('params:', params, 'name:', name);
   globalVarsSet.forEach(key => {
     const keyTemp = key.replace(/^@/, '');
     if (params.indexOf(keyTemp) !== -1 || name.indexOf(keyTemp) !== -1) {
       remove = false;
-      atRuleName.add(name.replace(/:$/, ""));
+      atRuleName.add(name);
+    }
+  });
+  atRuleName.forEach(key => {
+    const keyTemp = key.replace(/^@/, '');
+    if (params.indexOf(keyTemp) !== -1 || name.indexOf(keyTemp) !== -1) {
+      remove = false;
     }
   });
   if (remove) {
@@ -84,13 +86,15 @@ function dealAtRule(rule, atRuleName) {
 function dealDecl(rule, atRuleName) {
   const { value, prop } = rule;
   let remove = true;
-  atRuleName.forEach(key => {
-    if (value.indexOf(key) !== -1 || prop.indexOf(key) !== -1) {
+  globalVarsSet.forEach(key => {
+    const keyTemp = key.replace(/^@/, '');
+    if (value.indexOf(keyTemp) !== -1) {
       remove = false;
     }
   });
-  globalVarsSet.forEach(key => {
-    if (value.indexOf(key) !== -1 || prop.indexOf(key) !== -1) {
+  atRuleName.forEach(key => {
+    const keyTemp = key.replace(/^@/, '');
+    if (value.indexOf(keyTemp) !== -1) {
       remove = false;
     }
   });
