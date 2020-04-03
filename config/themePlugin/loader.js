@@ -55,10 +55,10 @@ function themeLoader(source) {
   });
 }
 function deleteEmpty(item) {
-  if(item.nodes && item.nodes.lenght) {
+  if(item.nodes && item.nodes.length) {
     item.nodes.forEach(deleteEmpty)
   } else {
-    if(item.nodes && item.nodes.lenght === 0) {
+    if(item.nodes && item.nodes.length === 0) {
       item.remove();
     }
   }

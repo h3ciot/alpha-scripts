@@ -38,8 +38,8 @@ class ThemePlugin {
       //     cb(null, data);
       // });
       htmlWebpackPlugin.getHooks(compilation).alterAssetTagGroups.tapAsync('themePlugin', (data,cb) => {
-        const { headTags } = data;
-        headTags.push(createHtmlTagObject('link', { rel: "stylesheet/less",  href: process.env.PUBLIC_URL || '' + "/theme.less", type:"text/css" }));
+        const { bodyTags } = data;
+        bodyTags.push(createHtmlTagObject('link', { rel: "stylesheet/less",  href: process.env.PUBLIC_URL || '' + "/theme.less", type:"text/css" }));
         cb(null, data);
       });
     });
@@ -60,6 +60,7 @@ class ThemePlugin {
       let themeContent = storage.get('\r\n');
       if(themeContent.length) {
         let val = Object.keys(this.options.globalVars).map(key => `${key.indexOf('@') === 0 ? key : '@'+key}:${this.options.globalVars[key]};`);
+        Object.keys(this.options.otherVars).forEach(key => val.push(`${key.indexOf('@') === 0 ? key : '@'+key}:${this.options.otherVars[key]};`));
         themeContent = val.join('\r\n') + '\r\n' +themeContent;
         // 设置名称为 fileName 的输出资源
         // const themeFileContent = fs.readFileSync(this.options.themeFile, { encoding: 'utf-8'}).toString();

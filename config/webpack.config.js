@@ -466,7 +466,7 @@ module.exports = function (webpackEnv) {
     },
     plugins: merge({ plugins: [
         // add happypack
-        new ThemePlugin({ globalVars: alpharc.themeVars || {}}),
+        new ThemePlugin({ globalVars: alpharc.themeVars || {}, otherVars: alpharc.otherVars || {}}),
         new HappyPack({
           id: 'eslint',
           threadPool: happyThreadPool,
