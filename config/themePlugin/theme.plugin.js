@@ -60,7 +60,7 @@ class ThemePlugin {
       let themeContent = storage.get('\r\n');
       if(themeContent.length) {
         let val = Object.keys(this.options.globalVars).map(key => `${key.indexOf('@') === 0 ? key : '@'+key}:${this.options.globalVars[key]};`);
-        themeContent = val.join('\r\n') + themeContent;
+        themeContent = val.join('\r\n') + '\r\n' +themeContent;
         // 设置名称为 fileName 的输出资源
         // const themeFileContent = fs.readFileSync(this.options.themeFile, { encoding: 'utf-8'}).toString();
         // themeContent.unshift(themeFileContent);
