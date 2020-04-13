@@ -14,7 +14,7 @@ const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
-
+const ThemePlugin = require('./themePlugin/theme.plugin');
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -259,13 +259,18 @@ module.exports = {
                     },
                   },
                   use: cssLoaders.concat(
-                    {
+                    [{
                       loader: require.resolve('less-loader'),
                       options: {
                         modifyVars: alpharc.theme || {},
-                        sourceMap: shouldUseSourceMap,
+                        globalVars: alpharc.themeVars || {}
                       },
-                    },
+                    }, {
+                      loader: ThemePlugin.loader,
+                      options: {
+                        globalVars: alpharc.themeVars || {},
+                      },
+                    }]
                   ),
                 },
                 extractTextPluginOptions
@@ -294,6 +299,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new ThemePlugin({ globalVars: alpharc.themeVars || {}, otherVars: alpharc.otherVars || {}}),
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
