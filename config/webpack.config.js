@@ -24,7 +24,8 @@ const InjectGitInfoPlugin = require('./InjectGitInfoPlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
@@ -34,7 +35,7 @@ const ThemePlugin = require('./themePlugin/theme.plugin');
 const HappyPack = require('happypack');
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length - 1 });
 // alpharc配置
-const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
+const alpharc = (fs.existsSync(paths.alpharc) && require(paths.alpharc)) || {};
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -54,28 +55,28 @@ const lessRegex = /\.less$/;
 module.exports = function (webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
-  
+
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
   // In development, we always serve from the root. This makes config easier.
   const publicPath = isEnvProduction
     ? paths.servedPath
     : isEnvDevelopment && '/';
-  
+
   // `publicUrl` is just like `publicPath`, but we will provide it to our app
   // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
   // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
   const publicUrl = isEnvProduction
     ? publicPath.slice(0, -1)
     : isEnvDevelopment && '';
-  
+
   // Get environment variables to inject into our app.
   const env = getClientEnvironment(publicUrl);
-  
+
   // Some apps do not use client-side routing with pushState.
   // For these, "homepage" can be set to "." to enable relative asset paths.
   const shouldUseRelativeAssetPaths = publicPath === './';
-  
+
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor, preProcessorOption) => {
     const loaders = [
@@ -117,9 +118,12 @@ module.exports = function (webpackEnv) {
     if (preProcessor) {
       loaders.push({
         loader: require.resolve(preProcessor),
-        options: Object.assign({
-          sourceMap: isEnvProduction && shouldUseSourceMap,
-        }, preProcessorOption || {}),
+        options: Object.assign(
+          {
+            sourceMap: isEnvProduction && shouldUseSourceMap,
+          },
+          preProcessorOption || {}
+        ),
       });
     }
     return loaders;
@@ -147,7 +151,7 @@ module.exports = function (webpackEnv) {
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
       isEnvDevelopment &&
-      require.resolve('react-dev-utils/webpackHotDevClient'),
+        require.resolve('react-dev-utils/webpackHotDevClient'),
       // add polyfills, dev and production all
       require.resolve('./polyfills'),
       // Finally, this is your app's code:
@@ -178,12 +182,12 @@ module.exports = function (webpackEnv) {
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
         ? info =>
-          path
-            .relative(paths.appSrc, info.absoluteResourcePath)
-            .replace(/\\/g, '/')
+            path
+              .relative(paths.appSrc, info.absoluteResourcePath)
+              .replace(/\\/g, '/')
         : isEnvDevelopment &&
-        (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
-      globalObject: isEnvDevelopment ? "this" : undefined,
+          (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+      globalObject: isEnvDevelopment ? 'this' : undefined,
     },
     optimization: {
       minimize: isEnvProduction,
@@ -241,13 +245,13 @@ module.exports = function (webpackEnv) {
             parser: safePostCssParser,
             map: shouldUseSourceMap
               ? {
-                // `inline: false` forces the sourcemap to be output into a
-                // separate file
-                inline: false,
-                // `annotation: true` appends the sourceMappingURL to the end of
-                // the css file, helping the browser find the sourcemap
-                annotation: true,
-              }
+                  // `inline: false` forces the sourcemap to be output into a
+                  // separate file
+                  inline: false,
+                  // `annotation: true` appends the sourceMappingURL to the end of
+                  // the css file, helping the browser find the sourcemap
+                  annotation: true,
+                }
               : false,
             // 避免unicode-range的乱码问题
             normalizeUnicode: false,
@@ -273,7 +277,14 @@ module.exports = function (webpackEnv) {
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
       // https://github.com/facebook/create-react-app/issues/253
-      modules: [alpharc.modules, paths.appNodeModules, 'node_modules', path.resolve(paths.appNodeModules, '../../../node_modules')].concat(process.env.NODE_PATH.split(path.delimiter)).filter(Boolean),
+      modules: [
+        alpharc.modules,
+        paths.appNodeModules,
+        'node_modules',
+        path.resolve(paths.appNodeModules, '../../../node_modules'),
+      ]
+        .concat(process.env.NODE_PATH.split(path.delimiter))
+        .filter(Boolean),
       // These are the reasonable defaults supported by the Node ecosystem.
       // We also include JSX as a common component filename extension to support
       // some tools, although we do not recommend using it, see:
@@ -305,7 +316,7 @@ module.exports = function (webpackEnv) {
       rules: [
         // Disable require.ensure as it's not a standard language feature.
         { parser: { requireEnsure: false } },
-        
+
         // First, run the linter.
         // It's important to do this before Babel processes the JS.
         {
@@ -339,7 +350,7 @@ module.exports = function (webpackEnv) {
         {
           test: /\.worker\.js$/,
           loader: require.resolve('worker-loader'),
-          exclude: /node_modules/
+          exclude: /node_modules/,
         },
         {
           // "oneOf" will traverse all following loaders until one will
@@ -426,10 +437,14 @@ module.exports = function (webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
                 },
                 'less-loader',
-                { javascriptEnabled: true, modifyVars: alpharc.theme || {}, globalVars: alpharc.themeVars || {} }
+                {
+                  javascriptEnabled: true,
+                  modifyVars: alpharc.theme || {},
+                  globalVars: alpharc.themeVars || {},
+                }
               ).concat({
                 loader: ThemePlugin.loader,
                 options: {
@@ -464,260 +479,287 @@ module.exports = function (webpackEnv) {
         },
       ],
     },
-    plugins: merge({ plugins: [
-        // add happypack
-        new ThemePlugin({ globalVars: alpharc.themeVars || {}, otherVars: alpharc.otherVars || {}}),
-        new HappyPack({
-          id: 'eslint',
-          threadPool: happyThreadPool,
-          loaders: [
-            {
-              options: Object.assign(
-                {
-                  formatter: require.resolve('react-dev-utils/eslintFormatter'),
-                  eslintPath: require.resolve('eslint'),
-                  presets: ["react-app"],
-                },
-                alpharc.eslintrc ? {
-                  useEslintrc: true,
-                  configFile: alpharc.eslintConfigPath,
-                } : {
-                  baseConfig: {
-                    extends: [require.resolve('eslint-config-react-app')],
-                  },
-                  ignore: false,
-                  useEslintrc: false,
-                }
-              ),
-              loader: require.resolve('eslint-loader'),
-            }],
-        }),
-        new HappyPack({
-          id: 'babel',
-          threadPool: happyThreadPool,
-          loaders: [{
-            loader: require.resolve('babel-loader'),
-            options: {
-              customize: require.resolve(
-                'babel-preset-react-app/webpack-overrides'
-              ),
-              // babelrc: false,
-              // configFile: false,
-              presets: [[require.resolve('babel-preset-react-app'), { flow: true, typescript: false }]],
-              plugins: [
-                [
-                  require.resolve('babel-plugin-named-asset-import'),
+    plugins: merge(
+      {
+        plugins: [
+          // add happypack
+          new ThemePlugin({
+            globalVars: alpharc.themeVars || {},
+            otherVars: alpharc.otherVars || {},
+          }),
+          new HappyPack({
+            id: 'eslint',
+            threadPool: happyThreadPool,
+            loaders: [
+              {
+                options: Object.assign(
                   {
-                    loaderMap: {
-                      svg: {
-                        ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
-                      },
-                    },
+                    formatter: require.resolve(
+                      'react-dev-utils/eslintFormatter'
+                    ),
+                    eslintPath: require.resolve('eslint'),
+                    presets: ['react-app'],
                   },
-                ]
-              ],
-              // This is a feature of `babel-loader` for webpack (not Babel itself).
-              // It enables caching results in ./node_modules/.cache/babel-loader/
-              // directory for faster rebuilds.
-              cacheDirectory: true,
-              cacheCompression: isEnvProduction,
-              compact: isEnvProduction,
-            },
-          }]
-        }),
-        new HappyPack({
-          id: 'babelRuntime',
-          threadPool: happyThreadPool,
-          loaders: [{
-            loader: require.resolve('babel-loader'),
-            options: {
-              babelrc: false,
-              configFile: false,
-              compact: false,
-              presets: [
-                [
-                  require.resolve('babel-preset-react-app/dependencies'),
-                  { helpers: true },
-                ],
-              ],
-              cacheDirectory: true,
-              cacheCompression: isEnvProduction,
-              cacheIdentifier: getCacheIdentifier(
-                isEnvProduction
-                  ? 'production'
-                  : isEnvDevelopment && 'development',
-                [
-                  'babel-plugin-named-asset-import',
-                  'babel-preset-react-app',
-                  'react-dev-utils',
-                  'react-scripts',
-                ]
-              ),
-              // If an error happens in a package, it's possible to be
-              // because it was compiled. Thus, we don't want the browser
-              // debugger to show the original code. Instead, the code
-              // being evaluated would be much more helpful.
-              sourceMaps: false,
-            },
-          }]
-        }),
-        // new HappyPack({
-        //   id: 'url',
-        //   threadPool: happyThreadPool,
-        //   loaders: [{
-        //     loader: require.resolve('url-loader'),
-        //     options: {
-        //         limit: imageInlineSizeLimit,
-        //         name: 'static/media/[name].[hash:8].[ext]',
-        //     },
-        //   }]
-        // }),
-        // new HappyPack({
-        //     id: 'file',
-        //     threadPool: happyThreadPool,
-        //     loaders: [{
-        //         loader: require.resolve('file-loader'),
-        //         options: {
-        //             name: 'static/media/[name].[hash:8].[ext]',
-        //         },
-        //     }]
-        // }),
-        // Generates an `index.html` file with the <script> injected.
-        new HtmlWebpackPlugin(
-          Object.assign(
-            {},
-            {
-              inject: true,
-              template: paths.appHtml,
-            },
-            isEnvProduction
-              ? {
-                minify: {
-                  removeComments: true,
-                  collapseWhitespace: true,
-                  removeRedundantAttributes: true,
-                  useShortDoctype: true,
-                  removeEmptyAttributes: true,
-                  removeStyleLinkTypeAttributes: true,
-                  keepClosingSlash: true,
-                  minifyJS: true,
-                  minifyCSS: true,
-                  minifyURLs: true,
+                  alpharc.eslintrc
+                    ? {
+                        useEslintrc: true,
+                        configFile: alpharc.eslintConfigPath,
+                      }
+                    : {
+                        baseConfig: {
+                          extends: [require.resolve('eslint-config-react-app')],
+                        },
+                        ignore: false,
+                        useEslintrc: false,
+                      }
+                ),
+                loader: require.resolve('eslint-loader'),
+              },
+            ],
+          }),
+          new HappyPack({
+            id: 'babel',
+            threadPool: happyThreadPool,
+            loaders: [
+              {
+                loader: require.resolve('babel-loader'),
+                options: {
+                  customize: require.resolve(
+                    'babel-preset-react-app/webpack-overrides'
+                  ),
+                  // babelrc: false,
+                  // configFile: false,
+                  presets: [
+                    [
+                      require.resolve('babel-preset-react-app'),
+                      { flow: true, typescript: false },
+                    ],
+                  ],
+                  plugins: [
+                    [
+                      require.resolve('babel-plugin-named-asset-import'),
+                      {
+                        loaderMap: {
+                          svg: {
+                            ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
+                          },
+                        },
+                      },
+                    ],
+                  ],
+                  // This is a feature of `babel-loader` for webpack (not Babel itself).
+                  // It enables caching results in ./node_modules/.cache/babel-loader/
+                  // directory for faster rebuilds.
+                  cacheDirectory: true,
+                  cacheCompression: isEnvProduction,
+                  compact: isEnvProduction,
                 },
-              }
-              : undefined
-          )
-        ),
-        // Inlines the webpack runtime script. This script is too small to warrant
-        // a network request.
-        isEnvProduction &&
-        shouldInlineRuntimeChunk &&
-        new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
-        // Makes some environment variables available in index.html.
-        // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
-        // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-        // In production, it will be an empty string unless you specify "homepage"
-        // in `package.json`, in which case it will be the pathname of that URL.
-        // In development, this will be an empty string.
-        new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
-        // This gives some necessary context to module not found errors, such as
-        // the requesting resource.
-        new ModuleNotFoundPlugin(paths.appPath),
-        // Makes some environment variables available to the JS code, for example:
-        // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
-        // It is absolutely essential that NODE_ENV is set to production
-        // during a production build.
-        // Otherwise React will be compiled in the very slow development mode.
-        new webpack.DefinePlugin(env.stringified),
-        // This is necessary to emit hot updates (currently CSS only):
-        isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
-        // Watcher doesn't work well if you mistype casing in a path so we use
-        // a plugin that prints an error when you attempt to do this.
-        // See https://github.com/facebook/create-react-app/issues/240
-        isEnvDevelopment && new CaseSensitivePathsPlugin(),
-        // If you require a missing module and then `npm install` it, you still have
-        // to restart the development server for Webpack to discover it. This plugin
-        // makes the discovery automatic so you don't have to restart.
-        // See https://github.com/facebook/create-react-app/issues/186
-        isEnvDevelopment &&
-        new WatchMissingNodeModulesPlugin(paths.appNodeModules),
-        isEnvProduction &&
-        new MiniCssExtractPlugin({
-          // Options similar to the same options in webpackOptions.output
-          // both options are optional
-          filename: 'static/css/[name].[contenthash:8].css',
-          chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
-        }),
-        // Generate a manifest file which contains a mapping of all asset filenames
-        // to their corresponding output file so that tools can pick it up without
-        // having to parse `index.html`.
-        new ManifestPlugin({
-          fileName: 'asset-manifest.json',
-          publicPath: publicPath,
-          generate: (seed, files) => {
-            const manifestFiles = files.reduce(function(manifest, file) {
-              manifest[file.name] = file.path;
-              return manifest;
-            }, seed);
-            
-            return {
-              files: manifestFiles,
-            };
-          },
-        }),
-        // Moment.js is an extremely popular library that bundles large locale files
-        // by default due to how Webpack interprets its code. This is a practical
-        // solution that requires the user to opt into importing specific locales.
-        // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-        // You can remove this if you don't use Moment.js:
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-        // Generate a service worker script that will precache, and keep up to date,
-        // the HTML & assets that are part of the Webpack build.
-        isEnvProduction &&
-        new SWPrecacheWebpackPlugin({
-          // By default, a cache-busting query parameter is appended to requests
-          // used to populate the caches, to ensure the responses are fresh.
-          // If a URL is already hashed by Webpack, then there is no concern
-          // about it being stale, and the cache-busting can be skipped.
-          dontCacheBustUrlsMatching: /\.\w{8}\./,
-          filename: 'service-worker.js',
-          logger(message) {
-            if (message.indexOf('Total precache size is') === 0) {
-              // This message occurs for every build and is a bit too noisy.
-              return;
-            }
-            if (message.indexOf('Skipping static resource') === 0) {
-              // This message obscures real errors so we ignore it.
-              // https://github.com/facebookincubator/create-react-app/issues/2612
-              return;
-            }
-            console.log(message);
-          },
-          minify: true,
-          // For unknown URLs, fallback to the index page
-          navigateFallback: publicUrl + '/index.html',
-          // Ignores URLs starting from /__ (useful for Firebase):
-          // https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
-          navigateFallbackWhitelist: [/^(?!\/__).*/],
-          // Don't precache sourcemaps (they're large) and build asset manifest:
-          // ignore index.html (always get the index.html from server)
-          staticFileGlobsIgnorePatterns: [/index\.html$/, /\.map$/, /asset-manifest\.json$/],
-        }),
-        // add webpack analyzer
-        isEnvProduction && alpharc.analyzer && new BundleAnalyzerPlugin(
-          {
-            analyzerMode: 'server',
-            analyzerHost: '127.0.0.1',
-            analyzerPort: 1234,
-            openAnalyzer: true,
-          }
-        ),
-        //   add progress
-        new ProgressBarPlugin(),
-        isEnvProduction && new InjectGitInfoPlugin({ workPath: paths.gitPath }),
-        new webpack.ProvidePlugin({ less: 'less' }),
-        // add cache
-      ].filter(Boolean) }, { plugins: alpharc.plugins }).plugins,
+              },
+            ],
+          }),
+          new HappyPack({
+            id: 'babelRuntime',
+            threadPool: happyThreadPool,
+            loaders: [
+              {
+                loader: require.resolve('babel-loader'),
+                options: {
+                  babelrc: false,
+                  configFile: false,
+                  compact: false,
+                  presets: [
+                    [
+                      require.resolve('babel-preset-react-app/dependencies'),
+                      { helpers: true },
+                    ],
+                  ],
+                  cacheDirectory: true,
+                  cacheCompression: isEnvProduction,
+                  cacheIdentifier: getCacheIdentifier(
+                    isEnvProduction
+                      ? 'production'
+                      : isEnvDevelopment && 'development',
+                    [
+                      'babel-plugin-named-asset-import',
+                      'babel-preset-react-app',
+                      'react-dev-utils',
+                      'react-scripts',
+                    ]
+                  ),
+                  // If an error happens in a package, it's possible to be
+                  // because it was compiled. Thus, we don't want the browser
+                  // debugger to show the original code. Instead, the code
+                  // being evaluated would be much more helpful.
+                  sourceMaps: false,
+                },
+              },
+            ],
+          }),
+          // new HappyPack({
+          //   id: 'url',
+          //   threadPool: happyThreadPool,
+          //   loaders: [{
+          //     loader: require.resolve('url-loader'),
+          //     options: {
+          //         limit: imageInlineSizeLimit,
+          //         name: 'static/media/[name].[hash:8].[ext]',
+          //     },
+          //   }]
+          // }),
+          // new HappyPack({
+          //     id: 'file',
+          //     threadPool: happyThreadPool,
+          //     loaders: [{
+          //         loader: require.resolve('file-loader'),
+          //         options: {
+          //             name: 'static/media/[name].[hash:8].[ext]',
+          //         },
+          //     }]
+          // }),
+          // Generates an `index.html` file with the <script> injected.
+          new HtmlWebpackPlugin(
+            Object.assign(
+              {},
+              {
+                inject: true,
+                template: paths.appHtml,
+              },
+              isEnvProduction
+                ? {
+                    minify: {
+                      removeComments: true,
+                      collapseWhitespace: true,
+                      removeRedundantAttributes: true,
+                      useShortDoctype: true,
+                      removeEmptyAttributes: true,
+                      removeStyleLinkTypeAttributes: true,
+                      keepClosingSlash: true,
+                      minifyJS: true,
+                      minifyCSS: true,
+                      minifyURLs: true,
+                    },
+                  }
+                : undefined
+            )
+          ),
+          // Inlines the webpack runtime script. This script is too small to warrant
+          // a network request.
+          isEnvProduction &&
+            shouldInlineRuntimeChunk &&
+            new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
+          // Makes some environment variables available in index.html.
+          // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
+          // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+          // In production, it will be an empty string unless you specify "homepage"
+          // in `package.json`, in which case it will be the pathname of that URL.
+          // In development, this will be an empty string.
+          new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
+          // This gives some necessary context to module not found errors, such as
+          // the requesting resource.
+          new ModuleNotFoundPlugin(paths.appPath),
+          // Makes some environment variables available to the JS code, for example:
+          // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
+          // It is absolutely essential that NODE_ENV is set to production
+          // during a production build.
+          // Otherwise React will be compiled in the very slow development mode.
+          new webpack.DefinePlugin(env.stringified),
+          // This is necessary to emit hot updates (currently CSS only):
+          isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+          // Watcher doesn't work well if you mistype casing in a path so we use
+          // a plugin that prints an error when you attempt to do this.
+          // See https://github.com/facebook/create-react-app/issues/240
+          isEnvDevelopment && new CaseSensitivePathsPlugin(),
+          // If you require a missing module and then `npm install` it, you still have
+          // to restart the development server for Webpack to discover it. This plugin
+          // makes the discovery automatic so you don't have to restart.
+          // See https://github.com/facebook/create-react-app/issues/186
+          isEnvDevelopment &&
+            new WatchMissingNodeModulesPlugin(paths.appNodeModules),
+          isEnvProduction &&
+            new MiniCssExtractPlugin({
+              // Options similar to the same options in webpackOptions.output
+              // both options are optional
+              filename: 'static/css/[name].[contenthash:8].css',
+              chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+            }),
+          // Generate a manifest file which contains a mapping of all asset filenames
+          // to their corresponding output file so that tools can pick it up without
+          // having to parse `index.html`.
+          new ManifestPlugin({
+            fileName: 'asset-manifest.json',
+            publicPath: publicPath,
+            generate: (seed, files) => {
+              const manifestFiles = files.reduce(function (manifest, file) {
+                manifest[file.name] = file.path;
+                return manifest;
+              }, seed);
+
+              return {
+                files: manifestFiles,
+              };
+            },
+          }),
+          // Moment.js is an extremely popular library that bundles large locale files
+          // by default due to how Webpack interprets its code. This is a practical
+          // solution that requires the user to opt into importing specific locales.
+          // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
+          // You can remove this if you don't use Moment.js:
+          new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+          // Generate a service worker script that will precache, and keep up to date,
+          // the HTML & assets that are part of the Webpack build.
+          isEnvProduction &&
+            new SWPrecacheWebpackPlugin({
+              // By default, a cache-busting query parameter is appended to requests
+              // used to populate the caches, to ensure the responses are fresh.
+              // If a URL is already hashed by Webpack, then there is no concern
+              // about it being stale, and the cache-busting can be skipped.
+              dontCacheBustUrlsMatching: /\.\w{8}\./,
+              filename: 'service-worker.js',
+              logger(message) {
+                if (message.indexOf('Total precache size is') === 0) {
+                  // This message occurs for every build and is a bit too noisy.
+                  return;
+                }
+                if (message.indexOf('Skipping static resource') === 0) {
+                  // This message obscures real errors so we ignore it.
+                  // https://github.com/facebookincubator/create-react-app/issues/2612
+                  return;
+                }
+                console.log(message);
+              },
+              minify: true,
+              // For unknown URLs, fallback to the index page
+              navigateFallback: publicUrl + '/index.html',
+              // Ignores URLs starting from /__ (useful for Firebase):
+              // https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
+              navigateFallbackWhitelist: [/^(?!\/__).*/],
+              // Don't precache sourcemaps (they're large) and build asset manifest:
+              // ignore index.html (always get the index.html from server)
+              staticFileGlobsIgnorePatterns: [
+                /index\.html$/,
+                /\.map$/,
+                /asset-manifest\.json$/,
+              ],
+            }),
+          // add webpack analyzer
+          isEnvProduction &&
+            alpharc.analyzer &&
+            new BundleAnalyzerPlugin({
+              analyzerMode: 'server',
+              analyzerHost: '127.0.0.1',
+              analyzerPort: 1234,
+              openAnalyzer: true,
+            }),
+          //   add progress
+          new ProgressBarPlugin(),
+          isEnvProduction &&
+            new InjectGitInfoPlugin({ workPath: paths.gitPath }),
+          new webpack.ProvidePlugin({ less: 'less' }),
+          // add cache
+        ].filter(Boolean),
+      },
+      { plugins: alpharc.plugins }
+    ).plugins,
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
     node: {

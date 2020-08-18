@@ -40,7 +40,9 @@ const getMockOptions = appPackageJson =>
   require(appPackageJson).mockOptions || {};
 
 const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
-const gitPath = fs.existsSync(path.resolve(resolveApp('.'), '.git')) ? resolveApp('.') : path.resolve(resolveApp('.'), '../../');
+const gitPath = fs.existsSync(path.resolve(resolveApp('.'), '.git'))
+  ? resolveApp('.')
+  : path.resolve(resolveApp('.'), '../../');
 module.exports = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),

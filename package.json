@@ -15,6 +15,9 @@
   "bin": {
     "alpha-scripts": "./bin/alpha-scripts.js"
   },
+  "scripts": {
+    "format": "prettier --trailing-comma es5 --single-quote --write '**/*.js'"
+  },
   "dependencies": {
     "@babel/core": "7.4.3",
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
@@ -72,7 +75,21 @@
     "whatwg-fetch": "3.0.0",
     "worker-loader": "^2.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,md}": [
+      "prettier --trailing-comma es5 --single-quote --write"
+    ]
+  },
   "browserslist": [
     ">1%",
     "last 4 versions",

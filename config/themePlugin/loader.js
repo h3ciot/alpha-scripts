@@ -17,48 +17,50 @@ function themeLoader(source) {
     globalVarsSet.add(key);
   });
   const callback = this.async();
-  postcss().process(source, { syntax: syntax }).then(result => {
-    const root = result.root;
-    let sourceTemp = source;
-    const atRuleName = new Set();
-    if (globalVarsSet.size) {
-      // 遍历相关节点,并移除无用节点
-      root.walkAtRules(rule => dealAtRule(rule, atRuleName));
-      root.walkDecls(rule => dealDecl(rule, atRuleName));
-      root.walkComments(comment => {
-        comment.parent.removeChild(comment);
-      });
-      root.walkRules(rule => {
-        if (rule.nodes.length === 0) {
-          let parent = rule.parent;
-          rule.parent.removeChild(rule);
-          // 删除全部空树将会导致缺少一个分号
-          while(parent) {
-            if(parent.nodes.length === 0) {
-              const temp = parent;
-              parent = parent.parent;
-              temp.remove();
-            } else {
-              break;
+  postcss()
+    .process(source, { syntax: syntax })
+    .then(result => {
+      const root = result.root;
+      let sourceTemp = source;
+      const atRuleName = new Set();
+      if (globalVarsSet.size) {
+        // 遍历相关节点,并移除无用节点
+        root.walkAtRules(rule => dealAtRule(rule, atRuleName));
+        root.walkDecls(rule => dealDecl(rule, atRuleName));
+        root.walkComments(comment => {
+          comment.parent.removeChild(comment);
+        });
+        root.walkRules(rule => {
+          if (rule.nodes.length === 0) {
+            let parent = rule.parent;
+            rule.parent.removeChild(rule);
+            // 删除全部空树将会导致缺少一个分号
+            while (parent) {
+              if (parent.nodes.length === 0) {
+                const temp = parent;
+                parent = parent.parent;
+                temp.remove();
+              } else {
+                break;
+              }
             }
           }
-        }
-      });
-    }
-    root.nodes.forEach(deleteEmpty);
-    if (root.nodes.length || atRuleName.size) {
-      storage.add(root.toString(stringify));
-      // storage.add(root.toResult());
-      // sourceTemp = `/**THEMECSSBEGIN**\r\n${root.toString()}\r\n**THEMECSSEND**/\r\n${source}`;
-    }
-    callback(null, sourceTemp);
-  });
+        });
+      }
+      root.nodes.forEach(deleteEmpty);
+      if (root.nodes.length || atRuleName.size) {
+        storage.add(root.toString(stringify));
+        // storage.add(root.toResult());
+        // sourceTemp = `/**THEMECSSBEGIN**\r\n${root.toString()}\r\n**THEMECSSEND**/\r\n${source}`;
+      }
+      callback(null, sourceTemp);
+    });
 }
 function deleteEmpty(item) {
-  if(item.nodes && item.nodes.length) {
-    item.nodes.forEach(deleteEmpty)
+  if (item.nodes && item.nodes.length) {
+    item.nodes.forEach(deleteEmpty);
   } else {
-    if(item.nodes && item.nodes.length === 0) {
+    if (item.nodes && item.nodes.length === 0) {
       item.remove();
     }
   }

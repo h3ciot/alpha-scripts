@@ -11,4 +11,4 @@ function get(split) {
   return storage.join(split);
 }
 
-module.exports =  { get, add };
+module.exports = { get, add };

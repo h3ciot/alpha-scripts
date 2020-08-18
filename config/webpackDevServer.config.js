@@ -10,10 +10,10 @@ const publicPath = '/';
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
-const alpharc = fs.existsSync(paths.alpharc) && require(paths.alpharc) || {};
+const alpharc = (fs.existsSync(paths.alpharc) && require(paths.alpharc)) || {};
 const mockOptions = alpharc.mockOptions || {};
 
-module.exports = function(proxy, allowedHost) {
+module.exports = function (proxy, allowedHost) {
   return {
     // WebpackDevServer 2.4.3 introduced a security fix that prevents remote
     // websites from potentially accessing local content through DNS rebinding:
