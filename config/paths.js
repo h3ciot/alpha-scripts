@@ -40,7 +40,9 @@ const getMockOptions = appPackageJson =>
   require(appPackageJson).mockOptions || {};
 
 const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
-
+const gitPath = fs.existsSync(path.resolve(resolveApp('.'), '.git'))
+  ? resolveApp('.')
+  : path.resolve(resolveApp('.'), '../../');
 module.exports = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
@@ -58,4 +60,5 @@ module.exports = {
   servedPath: getServedPath(resolveApp('package.json')),
   ownPath: resolveOwn('.'), // we're in ./node_modules/alpha-scripts/
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
+  gitPath: gitPath,
 };
