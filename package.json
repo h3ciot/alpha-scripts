@@ -1,6 +1,6 @@
 {
   "name": "alpha-scripts",
-  "version": "2.0.0-beta.13",
+  "version": "2.0.0",
   "description": "Configuration and scripts using webpack, mainly refers to react-scripts.",
   "main": "index.js",
   "author": "yoranfu",
