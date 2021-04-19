@@ -1,7 +1,11 @@
 # alpha-scripts
-This is a fork of ```react-scripts``` with some modifications that can toggle extra features.
+
+This is a fork of `react-scripts` with some modifications that can toggle extra features.
+
 ## USE
+
 ### Install
+
 Install with npm:
 
 ```
@@ -9,10 +13,13 @@ npm install --save-dev alpha-scripts
 ```
 
 Install with yarn:
+
 ```
 yarn add alpha-scripts --dev
 ```
+
 ### Run
+
 Runs the app in development mode:
 
 ```
@@ -35,12 +42,11 @@ You can pass options using a configuration file `.alpharc.js` in the root direct
 
 This option will enable analyzer, only in production mode, will open analyzer result in http://localhost:1234 `.eslintrc.*` files.
 
-
 #### `eslintrc` (default: false)
 
 This option will enable eslint using configuration defined in `.eslintrc.*` files.
 
-#### `eslintConfigPath` 
+#### `eslintConfigPath`
 
 This option set eslint configuration file path.
 
@@ -53,7 +59,7 @@ This option will enable the use of `.babelrc` configuration files.
 add directories for webpack to resolve modules from, see [webpack resolve.modules](https://webpack.js.org/configuration/resolve/#resolve-modules)
 
 ```js
-modules:['components']
+modules: ['components'];
 ```
 
 #### `alias`
@@ -69,16 +75,19 @@ set resolve aliases, see [webpack resolve.alias](https://webpack.js.org/configur
 allow additional webpack plugins. See [plugins page](https://webpack.js.org/configuration/plugins) for detail.
 
 #### `mockOptions`
-specify the options for mock data, [more](https://github.com/yoranfu/alpha-utils#usage)
+
+specify the options for mock data, [more](https://github.com/h3ciot/alpha-utils#usage)
 
 #### `openPathname`
+
 specify the default open pathname in development
 
 ```js
-openPathname: '/homepage'
+openPathname: '/homepage';
 ```
 
 #### `theme`
+
 override less variables via [less-loader modifyVars](https://github.com/webpack-contrib/less-loader#less-options)
 
 ```js
@@ -88,9 +97,11 @@ theme: {
 ```
 
 #### `includePaths`
+
 paths for babel-loader to resolve
 
 #### `watchIgnored`
+
 specify watch ignore files and/or directories [watchOptions.ignored](https://webpack.js.org/configuration/watch/#watchoptions-ignored)
 
 Note:
